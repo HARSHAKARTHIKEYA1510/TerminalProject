@@ -67,8 +67,14 @@ class TerminalService {
     const shell = this.defaultShell;
     const shellArgs = isWindows ? ['/d', '/s', '/c', command] : ['-c', command];
 
+    const vlcDir = '/Applications/VLC.app/Contents/MacOS';
+    const envPath = process.platform === 'darwin'
+      ? `${vlcDir}:${process.env.PATH || ''}`
+      : (process.env.PATH || '');
+
     const env = {
       ...process.env,
+      PATH: envPath,
       TERM: 'xterm-256color',
       COLORTERM: 'truecolor',
       FORCE_COLOR: '3',
