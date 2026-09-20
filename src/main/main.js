@@ -159,6 +159,28 @@ app.whenReady().then(() => {
     }, 1200);
   }
 
+  if (process.argv.includes('--e2e-test')) {
+    const { ipcMain } = require('electron');
+    ipcMain.handle('e2e:report', (_event, { passed, failed, results }) => {
+      console.log('\n📊 === E2E IPC & RENDERER TEST REPORT ===');
+      for (const r of results) {
+        console.log(`  ${r.success ? '✓' : '✗'} ${r.name}${r.error ? ` (${r.error})` : ''}`);
+      }
+      console.log(`\nResults: ${passed} passed, ${failed} failed.\n`);
+      if (failed > 0) {
+        app.exit(1);
+      } else {
+        console.log('🎉 ALL ELECTRON E2E & IPC TESTS PASSED SUCCESSFULLY!\n');
+        app.exit(0);
+      }
+    });
+
+    const win = windowManager.getMainWindow();
+    win.webContents.once('did-finish-load', () => {
+      win.webContents.send('e2e:run');
+    });
+  }
+
   app.on('activate', () => {
     const win = windowManager.getMainWindow();
     if (!win) {

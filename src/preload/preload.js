@@ -133,4 +133,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
       return () => ipcRenderer.removeListener(channel, handler);
     },
   },
+
+  // E2E Test Hooks
+  e2e: {
+    onRun: (callback) => {
+      const handler = () => callback();
+      ipcRenderer.on('e2e:run', handler);
+      return () => ipcRenderer.removeListener('e2e:run', handler);
+    },
+    report: (data) => ipcRenderer.invoke('e2e:report', data),
+  },
 });

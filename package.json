@@ -5,7 +5,10 @@
   "main": "src/main/main.js",
   "scripts": {
     "start": "electron .",
-    "test": "node --check src/main/*.js src/preload/*.js"
+    "test": "node test/unit.test.js && electron . --e2e-test",
+    "test:unit": "node test/unit.test.js",
+    "test:e2e": "electron . --e2e-test",
+    "test:smoke": "electron . --smoke-test"
   },
   "repository": {
     "type": "git",
