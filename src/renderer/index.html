@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TerminalDeck Pro - Electron Desktop Platform</title>
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+  <!-- Custom Drag Titlebar -->
+  <header class="titlebar" id="titlebar">
+    <div class="titlebar-center">
+      <div class="app-badge-logo">⚡</div>
+      <span class="app-title">TerminalDeck Pro</span>
+      <div class="system-status-indicator" id="system-status-badge">
+        <span class="pulse-dot"></span>
+        <span id="status-text">IPC READY</span>
+      </div>
+    </div>
+    <div class="titlebar-actions">
+      <button class="icon-btn" id="btn-toggle-pin" title="Toggle Always On Top">
+        📌 <span id="pin-label">Pin</span>
+      </button>
+      <button class="icon-btn" id="btn-toggle-hud" title="Toggle Floating Hardware HUD (Ctrl+Shift+H)">
+        📊 <span>HUD</span>
+      </button>
+      <button class="icon-btn" id="btn-min" title="Minimize">─</button>
+      <button class="icon-btn" id="btn-max" title="Maximize">□</button>
+      <button class="icon-btn" id="btn-close" title="Close">✕</button>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <!-- Top Tab Navigation -->
+    <nav class="tab-navigation">
+      <button class="nav-tab active" data-tab="terminal">
+        <span class="tab-icon">💻</span> Terminal Shell
+      </button>
+      <button class="nav-tab" data-tab="desktop-apis">
+        <span class="tab-icon">🎛️</span> Desktop APIs
+        <span class="tab-badge">Native</span>
+      </button>
+      <button class="nav-tab" data-tab="system-monitor">
+        <span class="tab-icon">📈</span> Hardware Monitor
+      </button>
+      <button class="nav-tab" data-tab="process-manager">
+        <span class="tab-icon">⚙️</span> Process Manager
+      </button>
+      <button class="nav-tab" data-tab="file-explorer">
+        <span class="tab-icon">📁</span> File Explorer
+      </button>
+    </nav>
+
+    <!-- Content Area -->
+    <main class="tab-content-area">
+      <!-- 1. TERMINAL PANE -->
+      <section class="tab-pane active" id="pane-terminal">
+        <div class="terminal-layout">
+          <div class="terminal-toolbar">
+            <div class="terminal-info-group">
+              <span style="font-size: 11.5px; color: var(--text-muted);">CWD:</span>
+              <div class="cwd-display" id="term-cwd">~</div>
+            </div>
+            <div class="macro-buttons">
+              <button class="macro-pill" data-cmd="git status">git status</button>
+              <button class="macro-pill" data-cmd="uname -a">uname -a</button>
+              <button class="macro-pill" data-cmd="df -h">df -h</button>
+              <button class="macro-pill" data-cmd="sw_vers">sw_vers</button>
+              <button class="macro-pill" data-cmd="node -v && electron -v">versions</button>
+              <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" id="btn-term-clear">Clear</button>
+              <button class="btn btn-danger" style="padding: 4px 10px; font-size: 11px; display: none;" id="btn-term-kill">Stop</button>
+            </div>
+          </div>
+
+          <div class="terminal-viewport" id="terminal-viewport">
+            <div class="terminal-output" id="terminal-output"></div>
+            <div class="terminal-prompt-bar">
+              <span class="prompt-prefix">❯</span>
+              <input type="text" class="terminal-input" id="terminal-input" placeholder="Type command (e.g. ls -la, git log, ping -c 3 8.8.8.8)..." autofocus autocomplete="off" spellcheck="false" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. DESKTOP APIS PANE -->
+      <section class="tab-pane" id="pane-desktop-apis">
+        <div class="api-grid">
+          <!-- Native Dialogs Card -->
+          <div class="api-card">
+            <div class="card-header">
+              <span class="card-title">🗂️ Native Dialogs</span>
+              <span class="card-tag">dialog</span>
+            </div>
+            <p style="font-size: 11.5px; color: var(--text-secondary);">Test OS native file selection, directory picker, and save dialogs.</p>
+            <div class="api-actions-row">
+              <button class="btn btn-primary" id="btn-api-open-file">Open File...</button>
+              <button class="btn" id="btn-api-open-dir">Pick Folder...</button>
+              <button class="btn" id="btn-api-save-file">Save File...</button>
+              <button class="btn" id="btn-api-msg-box">Confirm Prompt</button>
+              <button class="btn btn-danger" id="btn-api-err-box">Error Alert</button>
+            </div>
+            <div class="card-output-box" id="output-dialogs">Click any dialog trigger above...</div>
+          </div>
+
+          <!-- Clipboard Suite Card -->
+          <div class="api-card">
+            <div class="card-header">
+              <span class="card-title">📋 Clipboard Integration</span>
+              <span class="card-tag">clipboard</span>
+            </div>
+            <p style="font-size: 11.5px; color: var(--text-secondary);">Inspect system clipboard text, read image, and manage clipboard history.</p>
+            <div class="api-actions-row">
+              <button class="btn btn-primary" id="btn-clip-read">Read Clipboard</button>
+              <button class="btn" id="btn-clip-write">Write Timestamp</button>
+              <button class="btn" id="btn-clip-formats">Available Formats</button>
+              <button class="btn" id="btn-clip-image">Read Image</button>
+              <button class="btn btn-danger" id="btn-clip-clear">Clear</button>
+            </div>
+            <div class="card-output-box" id="output-clipboard">Clipboard contents will appear here...</div>
+          </div>
+
+          <!-- Native OS Notifications Card -->
+          <div class="api-card">
+            <div class="card-header">
+              <span class="card-title">🔔 Native Notifications</span>
+              <span class="card-tag">Notification</span>
+            </div>
+            <p style="font-size: 11.5px; color: var(--text-secondary);">Dispatch native desktop notifications with interactive click callbacks.</p>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" class="search-input" style="flex: 1;" id="notif-title" placeholder="Title" value="TerminalDeck Alert" />
+              <input type="text" class="search-input" style="flex: 1;" id="notif-body" placeholder="Notification body" value="Build completed successfully!" />
+            </div>
+            <div class="api-actions-row">
+              <button class="btn btn-primary" id="btn-notif-send">Show Toast Notification</button>
+              <button class="btn" id="btn-notif-dock-badge">Increment Dock Badge</button>
+              <button class="btn" id="btn-notif-clear-badge">Clear Badge</button>
+            </div>
+            <div class="card-output-box" id="output-notification">Notification status...</div>
+          </div>
+
+          <!-- Shell & OS Interactions Card -->
+          <div class="api-card">
+            <div class="card-header">
+              <span class="card-title">🐚 Shell & System Integration</span>
+              <span class="card-tag">shell</span>
+            </div>
+            <p style="font-size: 11.5px; color: var(--text-secondary);">Interact with the OS shell: open URLs, reveal items in Finder, play system beep.</p>
+            <div class="api-actions-row">
+              <button class="btn btn-primary" id="btn-shell-browser">Open GitHub Repo</button>
+              <button class="btn" id="btn-shell-reveal">Reveal App in Finder</button>
+              <button class="btn" id="btn-shell-beep">System Beep 🔊</button>
+            </div>
+            <div class="card-output-box" id="output-shell">Shell operation results...</div>
+          </div>
+
+          <!-- Screen & Displays Card -->
+          <div class="api-card">
+            <div class="card-header">
+              <span class="card-title">🖥️ Display & Cursor Telemetry</span>
+              <span class="card-tag">screen</span>
+            </div>
+            <p style="font-size: 11.5px; color: var(--text-secondary);">Live cursor coordinates & multi-display geometries.</p>
+            <div class="api-actions-row">
+              <button class="btn btn-primary" id="btn-screen-displays">Query Displays</button>
+              <button class="btn" id="btn-screen-cursor">Poll Cursor Position</button>
+            </div>
+            <div class="card-output-box" id="output-screen">Display info will appear here...</div>
+          </div>
+
+          <!-- Power Monitor & Lifecycle Card -->
+          <div class="api-card">
+            <div class="card-header">
+              <span class="card-title">🔋 Power & Lifecycle Monitor</span>
+              <span class="card-tag">powerMonitor</span>
+            </div>
+            <p style="font-size: 11.5px; color: var(--text-secondary);">Query system idle duration, AC vs Battery status, and power state events.</p>
+            <div class="api-actions-row">
+              <button class="btn btn-primary" id="btn-power-idle">Get Idle Time</button>
+              <button class="btn" id="btn-power-battery">Check Battery State</button>
+            </div>
+            <div class="card-output-box" id="output-power">Power metrics will appear here...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. SYSTEM MONITOR PANE -->
+      <section class="tab-pane" id="pane-system-monitor">
+        <div class="monitor-grid">
+          <!-- CPU Card -->
+          <div class="metric-gauge-card">
+            <div class="gauge-top">
+              <span class="gauge-title">CPU UTILIZATION</span>
+              <span class="gauge-val highlight-cyan" id="metric-cpu-val">0%</span>
+            </div>
+            <div class="meter-bar">
+              <div class="meter-fill cyan" id="meter-cpu-fill"></div>
+            </div>
+            <canvas class="chart-canvas" id="chart-cpu" width="400" height="90"></canvas>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted);">
+              <span id="metric-cpu-model">Loading CPU...</span>
+              <span id="metric-cpu-cores">-- cores</span>
+            </div>
+          </div>
+
+          <!-- Memory Card -->
+          <div class="metric-gauge-card">
+            <div class="gauge-top">
+              <span class="gauge-title">MEMORY CONSUMPTION</span>
+              <span class="gauge-val highlight-purple" id="metric-mem-val">0%</span>
+            </div>
+            <div class="meter-bar">
+              <div class="meter-fill purple" id="meter-mem-fill"></div>
+            </div>
+            <canvas class="chart-canvas" id="chart-mem" width="400" height="90"></canvas>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted);">
+              <span id="metric-mem-detail">Used: -- / Total: --</span>
+              <span id="metric-mem-free">Free: --</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Details Grid -->
+        <h3 style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px;">HOST ENVIRONMENT & SPECS</h3>
+        <div class="specs-list" id="specs-list">
+          <div class="spec-item">
+            <span class="spec-label">PLATFORM / OS</span>
+            <span class="spec-val" id="spec-os">--</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">ARCHITECTURE</span>
+            <span class="spec-val" id="spec-arch">--</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">HOSTNAME</span>
+            <span class="spec-val" id="spec-hostname">--</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">SYSTEM UPTIME</span>
+            <span class="spec-val" id="spec-uptime">--</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">ELECTRON / CHROME</span>
+            <span class="spec-val" id="spec-versions">--</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">USER HOMEDIR</span>
+            <span class="spec-val" id="spec-home">--</span>
+          </div>
+        </div>
+
+        <!-- Network Interfaces -->
+        <h3 style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px;">ACTIVE NETWORK INTERFACES</h3>
+        <div class="specs-list" id="network-list">
+          <div class="spec-item">
+            <span class="spec-label">LOADING INTERFACES...</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. PROCESS MANAGER PANE -->
+      <section class="tab-pane" id="pane-process-manager">
+        <div class="process-toolbar">
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="text" class="search-input" id="process-search" placeholder="Search by process name or PID..." />
+            <button class="btn btn-secondary" id="btn-refresh-processes">↻ Refresh</button>
+          </div>
+          <span style="font-size: 11.5px; color: var(--text-muted);" id="process-count">Showing 0 processes</span>
+        </div>
+
+        <div class="table-container">
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th style="width: 90px;">PID</th>
+                <th style="width: 80px;">PPID</th>
+                <th>PROCESS NAME</th>
+                <th style="width: 100px;">CPU %</th>
+                <th style="width: 100px;">MEM %</th>
+                <th style="width: 130px; text-align: right;">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="process-table-body">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">Loading processes...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 5. FILE EXPLORER PANE -->
+      <section class="tab-pane" id="pane-file-explorer">
+        <div class="explorer-layout">
+          <div class="explorer-breadcrumbs">
+            <button class="icon-btn" id="btn-fs-up" title="Parent Directory">⬆️ Up</button>
+            <button class="icon-btn" id="btn-fs-home" title="User Home">🏠 Home</button>
+            <button class="icon-btn" id="btn-fs-project" title="Project Root">📦 Project</button>
+            <div class="breadcrumb-path" id="fs-current-path">/</div>
+            <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px;" id="btn-fs-open-term">Open in Terminal</button>
+            <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;" id="btn-fs-reveal">Reveal in Finder</button>
+          </div>
+
+          <div class="file-list-container" id="fs-file-list">
+            <!-- Files populated by JS -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- File Preview Modal -->
+  <div class="modal-overlay" id="file-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span style="font-size: 13px; font-weight: 600; color: var(--text-primary);" id="modal-filename">File Preview</span>
+        <button class="icon-btn" id="modal-close">✕ Close</button>
+      </div>
+      <div class="modal-body" id="modal-content">Loading content...</div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="./js/terminal.js"></script>
+  <script src="./js/desktopApis.js"></script>
+  <script src="./js/systemMonitor.js"></script>
+  <script src="./js/fileExplorer.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>

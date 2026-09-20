@@ -1,0 +1,28 @@
+{
+  "name": "terminal-project",
+  "version": "1.0.0",
+  "description": "Desktop application built with Electron demonstrating Desktop APIs, Multi-Window Management, Secure IPC, and System-Level Interactions",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --check src/main/*.js src/preload/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HARSHAKARTHIKEYA1510/TerminalProject.git"
+  },
+  "keywords": [
+    "electron",
+    "desktop-api",
+    "ipc",
+    "terminal",
+    "system-monitor",
+    "windows",
+    "system-interactions"
+  ],
+  "author": "HARSHAKARTHIKEYA1510",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.2.1"
+  }
+}

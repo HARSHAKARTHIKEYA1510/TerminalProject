@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TerminalDeck HUD</title>
+  <link rel="stylesheet" href="./css/styles.css">
+  <style>
+    body {
+      background: transparent;
+      padding: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="hud-body">
+    <div class="hud-header">
+      <div class="hud-title">
+        <span style="color: var(--accent-cyan);">⚡</span> TERMINALDECK HUD
+      </div>
+      <div style="display: flex; gap: 4px;">
+        <button class="hud-btn" id="btn-hud-open-main" title="Open Main Window">⤢</button>
+        <button class="hud-btn" id="btn-hud-close" title="Close HUD">✕</button>
+      </div>
+    </div>
+
+    <!-- CPU Metric -->
+    <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+      <div style="display: flex; justify-content: space-between; font-size: 11px;">
+        <span style="color: var(--text-secondary); font-weight: 600;">CPU LOAD</span>
+        <span style="color: var(--accent-cyan); font-family: var(--font-mono); font-weight: 700;" id="hud-cpu-val">0%</span>
+      </div>
+      <div class="meter-bar" style="height: 6px;">
+        <div class="meter-fill cyan" id="hud-cpu-fill"></div>
+      </div>
+    </div>
+
+    <!-- RAM Metric -->
+    <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+      <div style="display: flex; justify-content: space-between; font-size: 11px;">
+        <span style="color: var(--text-secondary); font-weight: 600;">MEMORY</span>
+        <span style="color: #c084fc; font-family: var(--font-mono); font-weight: 700;" id="hud-mem-val">0%</span>
+      </div>
+      <div class="meter-bar" style="height: 6px;">
+        <div class="meter-fill purple" id="hud-mem-fill"></div>
+      </div>
+      <div style="font-size: 10px; color: var(--text-muted); font-family: var(--font-mono);" id="hud-mem-detail">
+        -- / --
+      </div>
+    </div>
+
+    <!-- Mini Specs Footer -->
+    <div style="margin-top: auto; display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
+      <span id="hud-uptime">UPTIME: --</span>
+      <span style="color: var(--accent-emerald);">LIVE SYNC</span>
+    </div>
+  </div>
+
+  <script src="./js/hud.js"></script>
+</body>
+</html>
